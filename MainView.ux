@@ -1,0 +1,79 @@
+<App>
+    <DockPanel>
+		<JavaScript>
+		    var Observable = require('FuseJS/Observable');
+		    var Device     = require('Device');
+
+		    // 푸시 서버 등록
+		    function requestPushReg(regID) {
+
+				var Environment = require('FuseJS/Environment');
+				var platform = "";
+				var version = Environment.mobileOSVersion;
+				
+				if (Environment.ios) platform = "IOS";
+				else if(Environment.android) platform = "AND";
+
+				var xhr = new XMLHttpRequest();
+				var params = "push_token="+regID+"&device_id="+Device.UUID+"&device_os="+platform+
+				"&app_ver="+version;
+				console.log("params: "+params);
+
+
+				xhr.open("POST", "http://61.97.121.198/fuse_push/register.php" , true);
+				xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+				xhr.onreadystatechange = function() {
+  					if (xhr.readyState == 4) {
+    					// JSON.parse does not evaluate the attacker's scripts.
+    					console.log(xhr.responseText);
+    					var resp = JSON.parse(xhr.responseText);
+    					console.log(resp._state_);
+  					}
+				}
+				xhr.send(params);
+		    }
+
+		    var push = require("FuseJS/Push");
+
+		    push.onRegistrationSucceeded = function(regID) {
+		        console.log("Reg Succeeded: " + regID);
+
+			    // 디바이스 정보 
+		        console.log('UUID:',   Device.UUID);
+		        console.log('locale:', Device.locale);
+		        console.log('system:', Device.system + " " + Device.systemVersion);
+		        console.log('SDK:',    Device.SDKVersion);
+		        console.log('device:', Device.vendor + " " + Device.model);
+		        console.log('cores:',  Device.cores);
+		        console.log('retina:', Device.isRetina);
+			
+				requestPushReg(regID);
+		    };
+
+		    push.onRegistrationFailed = function(reason) {
+		        console.log("Reg Failed: " + reason);
+		    };
+
+		    push.onReceivedMessage = function(payload) {
+		        console.log("Recieved Push Notification: " + payload);
+		    };
+
+
+	        module.exports = {
+	            name:     Device.vendor + " " + Device.model,
+	            uuid:     Device.UUID,
+	            locale:   Device.locale,
+	            cores:    Device.cores,
+	            isRetina: Device.isRetina
+	        };
+
+
+		</JavaScript>
+		<StatusBarBackground Dock="Top" />
+        <ScrollView ClipToBounds="true">
+            <StackPanel>
+                <Text FontSize="30">푸시 테스트!</Text>
+            </StackPanel>
+        </ScrollView>
+    </DockPanel>
+</App>
