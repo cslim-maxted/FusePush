@@ -1,4 +1,0 @@
-$: 322954041
-BuildCommand: build.sh
-RunCommand: run.sh
-Product: build/Debug-iphoneos/com.maxted.fusetest.app/com.maxted.fusetest

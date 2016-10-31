@@ -1,4 +1,0 @@
-$: -453063337
-BuildCommand: build.sh
-RunCommand: run.sh
-Product: com.maxted.fusetest.apk
